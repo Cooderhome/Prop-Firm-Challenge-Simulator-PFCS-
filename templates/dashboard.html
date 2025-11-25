@@ -1,0 +1,277 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+  /* ==== Core Styling ==== */
+  body {
+    font-family: "Poppins", sans-serif;
+    transition: all 0.4s ease;
+  }
+
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px);
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .glass-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(31, 38, 135, 0.3);
+  }
+
+  /* Progress bar */
+  .progress {
+    height: 14px;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.15);
+    overflow: hidden;
+  }
+  .progress-bar {
+    transition: width 1s ease-in-out, background-color 1s ease;
+    border-radius: 10px;
+  }
+
+  /* Step phase */
+  .phase-badge {
+    background: linear-gradient(90deg, #007bff, #00c6ff);
+    color: white;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-weight: 600;
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.4);
+  }
+
+  .phase-complete {
+    background: linear-gradient(90deg, #ffc107, #ff8c00);
+    color: #fff;
+    box-shadow: 0 0 12px rgba(255, 193, 7, 0.5);
+    animation: glowGold 2s infinite alternate;
+  }
+
+  @keyframes glowGold {
+    from { box-shadow: 0 0 10px rgba(255,193,7,0.4); }
+    to { box-shadow: 0 0 20px rgba(255,193,7,0.9); }
+  }
+
+  /* Dark mode */
+  body.dark-mode {
+    background-color: #121212;
+    color: #f8f9fa;
+  }
+  body.dark-mode .glass-card {
+    background: rgba(255, 255, 255, 0.05);
+  }
+  body.dark-mode .table th {
+    background-color: #222;
+  }
+
+  .fade-in {
+    animation: fadeIn 0.8s ease-in-out;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Phase banner */
+  .phase-banner {
+    text-align: center;
+    padding: 1rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    font-weight: 600;
+    color: #fff;
+  }
+  .phase-1-banner {
+    background: linear-gradient(90deg, #007bff, #00bfff);
+  }
+  .phase-2-banner {
+    background: linear-gradient(90deg, #ffc107, #ff8c00);
+    animation: fadePulse 2s infinite;
+  }
+  @keyframes fadePulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.85; }
+    100% { opacity: 1; }
+  }
+</style>
+
+<div class="container-fluid py-4 fade-in">
+  <!-- Header -->
+  <div class="dashboard-header">
+    <h2 class="fw-bold">💼 Prop Firm Challenge Dashboard</h2>
+    <button id="theme-toggle" class="btn btn-outline-light theme-toggle">
+      🌙 Toggle Dark/Light
+    </button>
+  </div>
+
+  <!-- Phase Banner -->
+  {% if account.status == "passed" %}
+    <div class="phase-banner phase-2-banner">
+      🎉 <strong>Congratulations!</strong> You’ve passed both steps of the challenge!
+    </div>
+  {% else %}
+    {% if account.phase == 1 %}
+      <div class="phase-banner phase-1-banner">🚀 Step 1 Active – Target: ${{ account.profit_target }}</div>
+    {% elif account.phase == 2 %}
+      <div class="phase-banner phase-2-banner">🔥 Step 2 Active – Target: ${{ account.profit_target }}</div>
+    {% endif %}
+  {% endif %}
+
+  <!-- Account Summary -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-3">
+      <div class="glass-card text-center">
+        <h6>Account Status</h6>
+        <h3 class="fw-bold text-primary">{{ account.status }}</h3>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="glass-card text-center">
+        <h6>Phase</h6>
+        <h3 class="fw-bold">
+          {% if account.status == "passed" %}
+            <span class="phase-complete">✅ Completed</span>
+          {% else %}
+            <span class="phase-badge {% if profit >= account.profit_target %}phase-complete{% endif %}">
+              Step {{ account.phase }}
+            </span>
+          {% endif %}
+        </h3>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="glass-card text-center">
+        <h6>Balance</h6>
+        <h3 class="fw-bold text-success">${{ "%.2f"|format(balance) }}</h3>
+        {% set progress = (profit / account.profit_target * 100) | round(2) %}
+        <div class="progress mt-3">
+          <div
+            class="progress-bar {% if profit >= account.profit_target %}bg-warning{% else %}bg-primary{% endif %}"
+            style="width: {{ progress if progress <= 100 else 100 }}%;">
+          </div>
+        </div>
+        <small class="text-muted">{{ progress if progress <= 100 else 100 }}% to target</small>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="glass-card text-center">
+        <h6>Profit Target</h6>
+        <h3 class="fw-bold text-primary">${{ account.profit_target }}</h3>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trades -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="fw-bold">📊 Trades</h4>
+    <a href="{{ url_for('add_trade') }}" class="btn btn-success">➕ Add Trade</a>
+  </div>
+
+  <div class="table-responsive mb-5">
+    <table class="table table-hover align-middle">
+      <thead>
+        <tr>
+          <th>Symbol</th>
+          <th>Entry</th>
+          <th>Exit</th>
+          <th>Size</th>
+          <th>PNL</th>
+          <th>Duration</th>
+          <th>Violation</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in trades %}
+        <tr>
+          <td><b>{{ t.symbol }}</b></td>
+          <td>${{ t.entry_price }}</td>
+          <td>${{ t.exit_price }}</td>
+          <td>{{ t.size }}</td>
+          <td class="{{ 'text-success' if t.pnl >= 0 else 'text-danger' }}">
+            {{ "%.2f"|format(t.pnl) }}
+          </td>
+          <td>{{ t.duration }}</td>
+          <td>
+            {% if t.violation %}
+              <span class="badge bg-danger">{{ t.violation }}</span>
+            {% else %}
+              <span class="badge bg-success">None</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Charts -->
+  <div class="row">
+    <div class="col-lg-6 mb-4">
+      <div class="glass-card">
+        <h6 class="fw-bold mb-2">📈 Equity Curve</h6>
+        <canvas id="equityChart"></canvas>
+      </div>
+    </div>
+    <div class="col-lg-6 mb-4">
+      <div class="glass-card">
+        <h6 class="fw-bold mb-2">💹 Daily PnL</h6>
+        <canvas id="dailyChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const equityLabels = {{ equity_curve | map(attribute="time") | list | tojson }};
+const equityData = {{ equity_curve | map(attribute="balance") | list | tojson }};
+const dailyLabels = {{ daily_pnl | map(attribute="date") | list | tojson if daily_pnl else [] }};
+const dailyData = {{ daily_pnl | map(attribute="pnl") | list | tojson if daily_pnl else [] }};
+
+new Chart(document.getElementById('equityChart'), {
+  type: 'line',
+  data: {
+    labels: equityLabels,
+    datasets: [{
+      label: 'Equity',
+      data: equityData,
+      borderColor: '#0d6efd',
+      backgroundColor: 'rgba(13,110,253,0.1)',
+      fill: true,
+      tension: 0.3
+    }]
+  },
+  options: { responsive: true, plugins: { legend: { display: false } } }
+});
+
+new Chart(document.getElementById('dailyChart'), {
+  type: 'bar',
+  data: {
+    labels: dailyLabels,
+    datasets: [{
+      data: dailyData,
+      backgroundColor: dailyData.map(v => v >= 0 ? '#198754cc' : '#dc3545cc'),
+      borderRadius: 6
+    }]
+  },
+  options: { responsive: true, plugins: { legend: { display: false } } }
+});
+
+const toggleBtn = document.getElementById('theme-toggle');
+const body = document.body;
+if (localStorage.getItem('theme') === 'dark') body.classList.add('dark-mode');
+toggleBtn.addEventListener('click', () => {
+  body.classList.toggle('dark-mode');
+  localStorage.setItem('theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
+});
+</script>
+{% endblock %}

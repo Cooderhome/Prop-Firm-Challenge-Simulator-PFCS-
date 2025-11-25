@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 90vh;">
+  <div class="glass-card p-4 rounded-4 shadow-lg" style="max-width: 450px; width: 100%;">
+    <h3 class="text-center text-gradient mb-4 fw-bold">🧾 Create an Account</h3>
+
+    <form method="POST" action="{{ url_for('register') }}">
+      <div class="mb-3">
+        <label for="username" class="form-label fw-semibold">Username</label>
+        <input type="text" id="username" name="username" class="form-control glass-input" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="email" class="form-label fw-semibold">Email</label>
+        <input type="email" id="email" name="email" class="form-control glass-input" required>
+      </div>
+
+      <div class="mb-4">
+        <label for="password" class="form-label fw-semibold">Password</label>
+        <input type="password" id="password" name="password" class="form-control glass-input" required>
+      </div>
+
+      {% if error %}
+        <div class="alert alert-danger text-center py-2 rounded-3">{{ error }}</div>
+      {% endif %}
+
+      <div class="d-grid mb-3">
+        <button type="submit" class="btn btn-primary btn-modern py-2">Register</button>
+      </div>
+
+      <p class="text-center text-muted small">
+        Already have an account?
+        <a href="{{ url_for('login') }}" class="text-info">Login here</a>
+      </p>
+    </form>
+  </div>
+</div>
+
+<style>
+.glass-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  animation: fadeUp 0.5s ease-in-out;
+}
+.glass-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+}
+.glass-input {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: #fff;
+}
+.glass-input:focus {
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+.text-gradient {
+  background: linear-gradient(45deg, #0dcaf0, #6610f2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+{% endblock %}

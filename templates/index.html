@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="hero-container text-center d-flex flex-column justify-content-center align-items-center">
+  <h1 class="fw-bold text-gradient mb-3 display-4">💼 EquityEdge Trader</h1>
+  <p class="lead text-light mb-4">
+    A modern prop firm simulation dashboard — track trades, performance, and rules in real time.
+  </p>
+  <div class="d-flex gap-3">
+    <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg btn-modern px-4 py-2">🔐 Login</a>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-light btn-lg btn-modern px-4 py-2">📊 View Dashboard</a>
+  </div>
+</div>
+
+<style>
+.hero-container {
+  min-height: 85vh;
+  background: radial-gradient(circle at top left, rgba(13, 110, 253, 0.3), rgba(111, 66, 193, 0.2)),
+              url("https://images.unsplash.com/photo-1561414927-6d86591d0c4d?auto=format&fit=crop&w=1950&q=80");
+  background-size: cover;
+  background-position: center;
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 60px;
+  animation: fadeIn 0.8s ease-in;
+}
+.text-gradient {
+  background: linear-gradient(45deg, #0dcaf0, #6610f2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.btn-modern {
+  transition: all 0.3s ease;
+  border-radius: 12px;
+}
+.btn-modern:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(13, 110, 253, 0.25);
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+{% endblock %}

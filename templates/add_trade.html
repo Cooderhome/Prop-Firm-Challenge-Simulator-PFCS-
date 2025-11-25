@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="glass-card mx-auto shadow-lg p-4 rounded-4" style="max-width: 650px;">
+        <h3 class="text-center mb-4 fw-bold text-gradient">➕ Add New Trade</h3>
+        <p class="text-center text-secondary mb-4">Record your latest trade to track your progress.</p>
+
+        <form method="POST" action="{{ url_for('add_trade') }}">
+            <!-- Date -->
+            <div class="mb-3">
+                <label for="date" class="form-label fw-semibold">Trade Date</label>
+                <input type="date" id="date" name="date" class="form-control glass-input" required>
+            </div>
+
+            <!-- Pair -->
+            <div class="mb-3">
+                <label for="pair" class="form-label fw-semibold">Instrument / Pair</label>
+                <input type="text" id="pair" name="pair" class="form-control glass-input" placeholder="e.g. EUR/USD" required>
+            </div>
+
+            <!-- Lot Size -->
+            <div class="mb-3">
+                <label for="lot_size" class="form-label fw-semibold">Lot Size</label>
+                <input type="number" step="0.01" id="lot_size" name="lot_size" class="form-control glass-input" placeholder="e.g. 1.00" required>
+            </div>
+
+            <!-- P/L -->
+            <div class="mb-3">
+                <label for="profit_loss" class="form-label fw-semibold">Profit / Loss (USD)</label>
+                <input type="number" step="0.01" id="profit_loss" name="profit_loss" class="form-control glass-input" placeholder="e.g. 250.00 or -100.00" required>
+            </div>
+
+            <!-- Notes -->
+            <div class="mb-4">
+                <label for="notes" class="form-label fw-semibold">Trade Notes</label>
+                <textarea id="notes" name="notes" rows="3" class="form-control glass-input" placeholder="Setup details, reasoning, mistakes..."></textarea>
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary btn-modern px-4 py-2">💾 Save Trade</button>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-outline-light btn-modern ms-2 px-4 py-2">⬅ Back</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+/* ===== Glass card styling ===== */
+.glass-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+    animation: fadeUp 0.6s ease-in-out;
+}
+.glass-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+}
+
+/* ===== Inputs ===== */
+.glass-input {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    color: #fff;
+    transition: all 0.3s ease;
+}
+
+.glass-input:focus {
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    color: #fff;
+}
+
+/* Label & text adjustments */
+.form-label {
+    color: #f8f9fa;
+}
+
+.text-gradient {
+    background: linear-gradient(45deg, #0dcaf0, #6610f2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Animation */
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Dark Mode Overrides */
+body.dark-mode .glass-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+body.dark-mode .glass-input {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #f8f9fa;
+}
+body.dark-mode .glass-input:focus {
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.3);
+}
+</style>
+{% endblock %}
